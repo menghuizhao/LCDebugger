@@ -1,0 +1,55 @@
+﻿446. 如果输入是正规的单向等差数列，草稿
+public class Solution {
+    public int NumberOfArithmeticSlices(int[] A) {
+        if(A == null || A.Length < 3){
+          return 0;
+        }
+        int counter = 0;
+        //even or odd. n = 2k or 2k + 1
+        int k = A.Length / 2;
+        //if n = 2k + 1, max index step = k
+        //if n = 2k, max index step = k - 1
+        int maxInterval = A.Length % 2 == 0 ? k - 1 : k;
+        for(int m = 1; m <= maxInterval; m++){
+          //Given the step of interval
+          int lastStartIndex = A.Length % 2 == 0 ? 2 * k - 2 * m - 1 : 2 * k - 2 * m;
+          // Using the step = m, find from start index = 0, stop finding at lastStartIndex
+          // how many arithmetic can we get.
+          counter += StartFromPToQ(A, m, 0, lastStartIndex);
+        }
+        return counter;
+    }
+    // Start from index start to index end, step for index2 = index1 + step
+    // How many arithmetic can we count
+    public int StartFromPToQ(int[] A, int step, int p, int q){
+      if(A == null || A.Length < 3){
+        return 0;
+      }
+      int counter = 0;
+      for(int i = p; i <= q; i++){
+        counter += StartFromT(A, step, i);
+      }
+      return counter;
+    }
+
+    //Give the step, start from index t, how many arithmetic you have?
+    public int StartFromT(int[] A, int step, int t){
+      int counter = 0;
+      
+      int k = 1;
+      while(t + step + k * step < A.Length){
+        //2 ^ 31 is long type, so casting to avoid corner cases
+        if(
+          (long)A[t + (k - 1) * step] - (long)A[t + k * step]
+          ==
+          (long)A[t + k * step] - (long)A[t + (k + 1) * step]
+        )
+        {
+          counter++;
+        }
+        k++;
+      }
+      
+      return counter;
+    }
+}
